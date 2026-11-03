@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esnaf Patron Paneli - Yönetici Özeti</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN (Grafikler için) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- Üst Menü -->
+    <header class="bg-slate-900 text-white shadow-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                📊 Mağaza Yönetici Paneli <span class="text-xs bg-emerald-600 text-white px-2 py-1 rounded">Canlı Veri</span>
+            </h1>
+            <span class="text-sm text-slate-400">Son Güncelleme: <span id="tarih"></span></span>
+        </div>
+    </header>
+
+    <!-- Ana İçerik -->
+    <main class="container mx-auto px-6 py-8">
+        
+        <!-- Üst Özet Kartları (Metrikler) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Kart 1 -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
+                <p class="text-sm text-gray-500 font-medium">Bugünkü Net Ciro</p>
+                <h3 class="text-2xl font-bold text-slate-800 mt-1">₺42.500</h3>
+                <span class="text-xs text-emerald-600 font-semibold">↑ Düne göre %12 artış</span>
+            </div>
+            <!-- Kart 2 -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-500">
+                <p class="text-sm text-gray-500 font-medium">Vadesi Gelen / Ödenmeyen Senet</p>
+                <h3 class="text-2xl font-bold text-slate-800 mt-1">₺18.200</h3>
+                <span class="text-xs text-amber-600 font-semibold">⚠️ 3 Müşterinin günü geçti</span>
+            </div>
+            <!-- Kart 3 -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500">
+                <p class="text-sm text-gray-500 font-medium">Depodaksatılmayan Ölü Mal</p>
+                <h3 class="text-2xl font-bold text-slate-800 mt-1">₺145.000</h3>
+                <span class="text-xs text-red-600 font-semibold">🚨 90+ gündür yatan ürün</span>
+            </div>
+            <!-- Kart 4 -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                <p class="text-sm text-gray-500 font-medium">Aktif Sevkiyat & Montaj</p>
+                <h3 class="text-2xl font-bold text-slate-800 mt-1">4 Adres</h3>
+                <span class="text-xs text-blue-600 font-semibold">📍 Ekipler sahada</span>
+            </div>
+        </div>
+
+        <!-- Grafik Alanı -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Sol Grafik: Haftalık Ciro -->
+            <div class="bg-white p-6 rounded-xl shadow-sm">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Haftalık Ciro ve Kâr Dağılımı</h3>
+                <canvas id="ciroGrafik" height="140"></canvas>
+            </div>
+            <!-- Sağ Grafik: En Çok Satan / Sorunlu Kategoriler -->
+            <div class="bg-white p-6 rounded-xl shadow-sm">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Ürün Grubu Satış Dağılımı</h3>
+                <canvas id="kategoriGrafik" height="140"></canvas>
+            </div>
+        </div>
+
+        <!-- Kritik Uyarılar / Geciken Müşteriler Tablosu -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-800">Acil Takip Edilecek Taksitler ve Senetler</h3>
+                <span class="text-xs bg-red-100 text-red-700 px-3 py-1 rounded-full font-bold">Aksiyon Bekliyor</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-600 text-sm">
+                            <th class="py-3 px-6">Müşteri Adı</th>
+                            <th class="py-3 px-6">Ürün Detayı</th>
+                            <th class="py-3 px-6">Tutar</th>
+                            <th class="py-3 px-6">Gecikme Süresi</th>
+                            <th class="py-3 px-6">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-sm text-slate-700">
+                        <tr>
+                            <td class="py-4 px-6 font-medium">Ahmet Yılmaz</td>
+                            <td class="py-4 px-6">Köşe Koltuk Takımı</td>
+                            <td class="py-4 px-6 font-bold text-red-600">₺4.500</td>
+                            <td class="py-4 px-6"><span class="bg-red-50 text-red-600 px-2 py-1 rounded text-xs">5 Gün Geçti</span></td>
+                            <td class="py-4 px-6"><button class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 transition">WhatsApp Hatırlat</button></td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 font-medium">Mehmet Demir</td>
+                            <td class="py-4 px-6">Ankastre Seti (3'lü)</td>
+                            <td class="py-4 px-6 font-bold text-red-600">₺3.200</td>
+                            <td class="py-4 px-6"><span class="bg-red-50 text-red-600 px-2 py-1 rounded text-xs">8 Gün Geçti</span></td>
+                            <td class="py-4 px-6"><button class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 transition">WhatsApp Hatırlat</button></td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 font-medium">Canan Kaya</td>
+                            <td class="py-4 px-6">Yatak Odası Modülü</td>
+                            <td class="py-4 px-6 font-bold text-amber-600">₺6.000</td>
+                            <td class="py-4 px-6"><span class="bg-amber-50 text-amber-600 px-2 py-1 rounded text-xs">Bugün Son Gün</span></td>
+                            <td class="py-4 px-6"><button class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 transition">WhatsApp Hatırlat</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Script Kodları (Grafikleri Canlandıran Kısmı) -->
+    <script>
+        // Tarih basma
+        document.getElementById('tarih').innerText = new Date().toLocaleDateString('tr-TR');
+
+        // Çizgi Grafik (Haftalık Ciro)
+        const ctxCiro = document.getElementById('ciroGrafik').getContext('2d');
+        new Chart(ctxCiro, {
+            type: 'line',
+            data: {
+                labels: ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'],
+                datasets: [{
+                    label: 'Günlük Ciro (₺)',
+                    data: [18000, 24000, 15000, 32000, 41000, 65000, 42500],
+                    borderColor: '#0f172a',
+                    backgroundColor: 'rgba(15, 23, 42, 0.05)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        // Pasta Grafik (Kategori Dağılımı)
+        const ctxKategori = document.getElementById('kategoriGrafik').getContext('2d');
+        new Chart(ctxKategori, {
+            type: 'doughnut',
+            data: {
+                labels: ['Mobilya / Koltuk', 'Beyaz Eşya', 'Halı / Ev Tekstili', 'Özel Proje / Mutfak'],
+                datasets: [{
+                    data: [45, 30, 15, 10],
+                    backgroundColor: ['#0f172a', '#059669', '#d97706', '#dc2626']
+                }]
+            },
+            options: { responsive: true }
+        });
+    </script>
+</body>
+</html>
