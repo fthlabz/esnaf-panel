@@ -1,109 +1,198 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Esnaf Patron Paneli - Yönetici Özeti</title>
+    <title>Executive Komuta Merkezi</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js CDN (Grafikler için) -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            bg: '#000000',
+                            card: '#1c1c1e',
+                            cardHover: '#2c2c2e',
+                            accent: '#0a84ff',
+                            success: '#30d158',
+                            warning: '#ff9f0a',
+                            danger: '#ff453a',
+                            textSecondary: '#8e8e93'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .glass-card {
+            background: rgba(28, 28, 30, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-apple-bg text-white min-h-screen antialiased selection:bg-apple-accent selection:text-white">
 
-    <!-- Üst Menü -->
-    <header class="bg-slate-900 text-white shadow-md">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                📊 Mağaza Yönetici Paneli <span class="text-xs bg-emerald-600 text-white px-2 py-1 rounded">Canlı Veri</span>
-            </h1>
-            <span class="text-sm text-slate-400">Son Güncelleme: <span id="tarih"></span></span>
+    <!-- Üst Başlık (iOS Dinamik Ada Hissi) -->
+    <header class="sticky top-0 z-50 glass-card border-b border-white/10">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-lg shadow-lg shadow-blue-500/30">
+                    K
+                </div>
+                <div>
+                    <h1 class="text-base font-semibold tracking-tight">Komuta Merkezi</h1>
+                    <p class="text-xs text-apple-textSecondary">Tüm Şubeler & Bayiler</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-apple-success/10 text-apple-success border border-apple-success/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-apple-success mr-1.5 animate-pulse"></span>
+                    Canlı Senkron
+                </span>
+            </div>
         </div>
     </header>
 
     <!-- Ana İçerik -->
-    <main class="container mx-auto px-6 py-8">
+    <main class="max-w-6xl mx-auto px-6 py-8 space-y-8">
         
-        <!-- Üst Özet Kartları (Metrikler) -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <!-- Özet Kartları (Apple Wallet Stili) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Kart 1 -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
-                <p class="text-sm text-gray-500 font-medium">Bugünkü Net Ciro</p>
-                <h3 class="text-2xl font-bold text-slate-800 mt-1">₺42.500</h3>
-                <span class="text-xs text-emerald-600 font-semibold">↑ Düne göre %12 artış</span>
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden transition-all duration-300 hover:border-white/20">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-3xl font-bold">₺</div>
+                <p class="text-xs font-medium text-apple-textSecondary uppercase tracking-wider">Bugünkü Toplam Ciro</p>
+                <h3 class="text-3xl font-bold tracking-tight mt-2">₺184.250</h3>
+                <div class="mt-3 flex items-center text-xs text-apple-success font-semibold">
+                    <span>▲ %14.2 artış (Düne göre)</span>
+                </div>
             </div>
             <!-- Kart 2 -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-500">
-                <p class="text-sm text-gray-500 font-medium">Vadesi Gelen / Ödenmeyen Senet</p>
-                <h3 class="text-2xl font-bold text-slate-800 mt-1">₺18.200</h3>
-                <span class="text-xs text-amber-600 font-semibold">⚠️ 3 Müşterinin günü geçti</span>
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden transition-all duration-300 hover:border-white/20">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-3xl font-bold">⚠️</div>
+                <p class="text-xs font-medium text-apple-textSecondary uppercase tracking-wider">Vadesi Gelen Alacak (Senet)</p>
+                <h3 class="text-3xl font-bold tracking-tight mt-2 text-apple-warning">₺64.800</h3>
+                <div class="mt-3 flex items-center text-xs text-apple-textSecondary">
+                    <span>Tahsil Edilmeyi Bekliyor</span>
+                </div>
             </div>
             <!-- Kart 3 -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500">
-                <p class="text-sm text-gray-500 font-medium">Depodaksatılmayan Ölü Mal</p>
-                <h3 class="text-2xl font-bold text-slate-800 mt-1">₺145.000</h3>
-                <span class="text-xs text-red-600 font-semibold">🚨 90+ gündür yatan ürün</span>
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden transition-all duration-300 hover:border-white/20">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-3xl font-bold">🚨</div>
+                <p class="text-xs font-medium text-apple-textSecondary uppercase tracking-wider">Kasadaki Nakit Açığı / Risk</p>
+                <h3 class="text-3xl font-bold tracking-tight mt-2 text-apple-danger">₺28.500</h3>
+                <div class="mt-3 flex items-center text-xs text-apple-danger font-semibold">
+                    <span>Bugün kapanması gerekiyor</span>
+                </div>
             </div>
             <!-- Kart 4 -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-                <p class="text-sm text-gray-500 font-medium">Aktif Sevkiyat & Montaj</p>
-                <h3 class="text-2xl font-bold text-slate-800 mt-1">4 Adres</h3>
-                <span class="text-xs text-blue-600 font-semibold">📍 Ekipler sahada</span>
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden transition-all duration-300 hover:border-white/20">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-3xl font-bold">🏢</div>
+                <p class="text-xs font-medium text-apple-textSecondary uppercase tracking-wider">Aktif Şube / Bayi</p>
+                <h3 class="text-3xl font-bold tracking-tight mt-2">4 Mağaza</h3>
+                <div class="mt-3 flex items-center text-xs text-apple-accent font-semibold">
+                    <span>Tüm sistemler aktif</span>
+                </div>
             </div>
         </div>
 
-        <!-- Grafik Alanı -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Sol Grafik: Haftalık Ciro -->
-            <div class="bg-white p-6 rounded-xl shadow-sm">
-                <h3 class="text-lg font-bold text-slate-800 mb-4">Haftalık Ciro ve Kâr Dağılımı</h3>
-                <canvas id="ciroGrafik" height="140"></canvas>
+        <!-- Şube Bazlı Performans & Grafik Alanı -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Sol: Şube Dağılımı (2 Kolon) -->
+            <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold tracking-tight">Bayi / Şube Ciro Dağılımı</h2>
+                    <span class="text-xs text-apple-textSecondary">Son 7 Gün</span>
+                </div>
+                <div class="h-72">
+                    <canvas id="subeGrafik"></canvas>
+                </div>
             </div>
-            <!-- Sağ Grafik: En Çok Satan / Sorunlu Kategoriler -->
-            <div class="bg-white p-6 rounded-xl shadow-sm">
-                <h3 class="text-lg font-bold text-slate-800 mb-4">Ürün Grubu Satış Dağılımı</h3>
-                <canvas id="kategoriGrafik" height="140"></canvas>
+
+            <!-- Sağ: Şube Özet Listesi (1 Kolon) -->
+            <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold tracking-tight mb-4">Şube Bazlı Durum</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                            <div>
+                                <h4 class="text-sm font-medium">Çilek Mobilya Şubesi</h4>
+                                <p class="text-xs text-apple-textSecondary">Net Kâr: %22</p>
+                            </div>
+                            <span class="text-sm font-semibold text-apple-success">₺72.400</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                            <div>
+                                <h4 class="text-sm font-medium">Bosch Beyaz Eşya</h4>
+                                <p class="text-xs text-apple-textSecondary">Net Kâr: %14</p>
+                            </div>
+                            <span class="text-sm font-semibold text-apple-success">₺54.100</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                            <div>
+                                <h4 class="text-sm font-medium">Emsan Züccaciye</h4>
+                                <p class="text-xs text-apple-textSecondary">Net Kâr: %18</p>
+                            </div>
+                            <span class="text-sm font-semibold text-apple-success">₺31.900</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                            <div>
+                                <h4 class="text-sm font-medium">Türk Telekom Bayii</h4>
+                                <p class="text-xs text-apple-textSecondary">Net Kâr: %11</p>
+                            </div>
+                            <span class="text-sm font-semibold text-apple-success">₺25.850</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Kritik Uyarılar / Geciken Müşteriler Tablosu -->
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-slate-800">Acil Takip Edilecek Taksitler ve Senetler</h3>
-                <span class="text-xs bg-red-100 text-red-700 px-3 py-1 rounded-full font-bold">Aksiyon Bekliyor</span>
+        <!-- Kritik Vade & Tahsilat Tablosu -->
+        <div class="glass-card rounded-2xl overflow-hidden">
+            <div class="px-6 py-5 border-b border-white/10 flex justify-between items-center">
+                <h2 class="text-lg font-semibold tracking-tight">Kritik Vadesi Gelen Alacaklar</h2>
+                <span class="text-xs bg-apple-danger/10 text-apple-danger px-3 py-1 rounded-full font-medium border border-apple-danger/20">Acil Tahsilat</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-50 text-gray-600 text-sm">
-                            <th class="py-3 px-6">Müşteri Adı</th>
-                            <th class="py-3 px-6">Ürün Detayı</th>
-                            <th class="py-3 px-6">Tutar</th>
-                            <th class="py-3 px-6">Gecikme Süresi</th>
-                            <th class="py-3 px-6">İşlem</th>
+                        <tr class="border-b border-white/10 text-apple-textSecondary text-xs uppercase tracking-wider">
+                            <th class="py-4 px-6 font-medium">Müşteri / Kurum</th>
+                            <th class="py-4 px-6 font-medium">Şube / Kategori</th>
+                            <th class="py-4 px-6 font-medium">Tutar</th>
+                            <th class="py-4 px-6 font-medium">Gecikme</th>
+                            <th class="py-4 px-6 font-medium text-right">Aksiyon</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 text-sm text-slate-700">
-                        <tr>
-                            <td class="py-4 px-6 font-medium">Ahmet Yılmaz</td>
-                            <td class="py-4 px-6">Köşe Koltuk Takımı</td>
-                            <td class="py-4 px-6 font-bold text-red-600">₺4.500</td>
-                            <td class="py-4 px-6"><span class="bg-red-50 text-red-600 px-2 py-1 rounded text-xs">5 Gün Geçti</span></td>
-                            <td class="py-4 px-6"><button class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 transition">WhatsApp Hatırlat</button></td>
+                    <tbody class="divide-y divide-white/5 text-sm">
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-6 font-medium">Ahmet Yılmaz İnşaat</td>
+                            <td class="py-4 px-6 text-apple-textSecondary">Çilek Mobilya</td>
+                            <td class="py-4 px-6 font-bold text-apple-danger">₺24.500</td>
+                            <td class="py-4 px-6"><span class="px-2.5 py-1 rounded-md text-xs bg-apple-danger/10 text-apple-danger">4 Gün Geçti</span></td>
+                            <td class="py-4 px-6 text-right">
+                                <button class="px-3 py-1.5 rounded-lg bg-apple-accent hover:bg-apple-accent/80 text-white text-xs font-medium transition-all">Hatırlat</button>
+                            </td>
                         </tr>
-                        <tr>
-                            <td class="py-4 px-6 font-medium">Mehmet Demir</td>
-                            <td class="py-4 px-6">Ankastre Seti (3'lü)</td>
-                            <td class="py-4 px-6 font-bold text-red-600">₺3.200</td>
-                            <td class="py-4 px-6"><span class="bg-red-50 text-red-600 px-2 py-1 rounded text-xs">8 Gün Geçti</span></td>
-                            <td class="py-4 px-6"><button class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 transition">WhatsApp Hatırlat</button></td>
-                        </tr>
-                        <tr>
-                            <td class="py-4 px-6 font-medium">Canan Kaya</td>
-                            <td class="py-4 px-6">Yatak Odası Modülü</td>
-                            <td class="py-4 px-6 font-bold text-amber-600">₺6.000</td>
-                            <td class="py-4 px-6"><span class="bg-amber-50 text-amber-600 px-2 py-1 rounded text-xs">Bugün Son Gün</span></td>
-                            <td class="py-4 px-6"><button class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs hover:bg-emerald-700 transition">WhatsApp Hatırlat</button></td>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-6 font-medium">Mehmet Demir (Usta)</td>
+                            <td class="py-4 px-6 text-apple-textSecondary">Bosch Beyaz Eşya</td>
+                            <td class="py-4 px-6 font-bold text-apple-warning">₺18.200</td>
+                            <td class="py-4 px-6"><span class="px-2.5 py-1 rounded-md text-xs bg-apple-warning/10 text-apple-warning">Bugün Son Gün</span></td>
+                            <td class="py-4 px-6 text-right">
+                                <button class="px-3 py-1.5 rounded-lg bg-apple-accent hover:bg-apple-accent/80 text-white text-xs font-medium transition-all">Hatırlat</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -112,42 +201,38 @@
 
     </main>
 
-    <!-- Script Kodları (Grafikleri Canlandıran Kısmı) -->
+    <!-- Grafik JS Kodları -->
     <script>
-        // Tarih basma
-        document.getElementById('tarih').innerText = new Date().toLocaleDateString('tr-TR');
-
-        // Çizgi Grafik (Haftalık Ciro)
-        const ctxCiro = document.getElementById('ciroGrafik').getContext('2d');
-        new Chart(ctxCiro, {
-            type: 'line',
+        const ctxSube = document.getElementById('subeGrafik').getContext('2d');
+        new Chart(ctxSube, {
+            type: 'bar',
             data: {
-                labels: ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'],
+                labels: ['Çilek Mobilya', 'Bosch', 'Emsan', 'Türk Telekom'],
                 datasets: [{
-                    label: 'Günlük Ciro (₺)',
-                    data: [18000, 24000, 15000, 32000, 41000, 65000, 42500],
-                    borderColor: '#0f172a',
-                    backgroundColor: 'rgba(15, 23, 42, 0.05)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3
+                    label: 'Şube Ciroları (₺)',
+                    data: [72400, 54100, 31900, 25850],
+                    backgroundColor: '#0a84ff',
+                    borderRadius: 8,
+                    barThickness: 32
                 }]
             },
-            options: { responsive: true, plugins: { legend: { display: false } } }
-        });
-
-        // Pasta Grafik (Kategori Dağılımı)
-        const ctxKategori = document.getElementById('kategoriGrafik').getContext('2d');
-        new Chart(ctxKategori, {
-            type: 'doughnut',
-            data: {
-                labels: ['Mobilya / Koltuk', 'Beyaz Eşya', 'Halı / Ev Tekstili', 'Özel Proje / Mutfak'],
-                datasets: [{
-                    data: [45, 30, 15, 10],
-                    backgroundColor: ['#0f172a', '#059669', '#d97706', '#dc2626']
-                }]
-            },
-            options: { responsive: true }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#8e8e93', font: { family: 'Inter' } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#8e8e93', font: { family: 'Inter' } }
+                    }
+                }
+            }
         });
     </script>
 </body>
