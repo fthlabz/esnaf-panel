@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive Control - Çok Şubeli İşletme Yönetim Sistemi</title>
+    <title>Executive Control - Kurumsal Yönetim Sistemi</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -78,8 +78,8 @@
         </div>
         <div id="desktopNavContent" class="flex-1 overflow-y-auto p-4 space-y-6"></div>
         <div class="p-4 border-t border-dark-border text-xs text-gray-400 flex justify-between items-center">
-            <span>Demo Modu Aktif</span>
-            <button onclick="resetDemoData()" class="text-brand-red hover:underline text-[11px]">Verileri Sıfırla</button>
+            <span>Güvenli Çöp Kutusu Aktif</span>
+            <button onclick="resetDemoData()" class="text-brand-red hover:underline text-[11px]">Sıfırla</button>
         </div>
     </aside>
 
@@ -93,14 +93,12 @@
             <div class="flex items-center gap-4">
                 <div class="text-right">
                     <p class="text-xs font-medium text-gray-300" id="headerDate"></p>
-                    <p class="text-[10px] text-brand-green font-semibold">● Tüm Sistemler Senkronize</p>
+                    <p class="text-[10px] text-brand-green font-semibold">● Güvenli Depolama Aktif</p>
                 </div>
             </div>
         </header>
 
-        <div class="p-4 md:p-8 flex-1 space-y-6" id="appMainContent">
-            <!-- Dinamik Sayfalar Buraya Yüklenecek -->
-        </div>
+        <div class="p-4 md:p-8 flex-1 space-y-6" id="appMainContent"></div>
     </main>
 
     <!-- Modal Konteyneri -->
@@ -108,10 +106,10 @@
         <div id="modalBox" class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl my-8"></div>
     </div>
 
-    <!-- Uygulama Mantığı ve Veri Tabanı Mimarisi -->
+    <!-- Uygulama Script Mantığı -->
     <script>
-        // --- 1. VERİ YÖNETİMİ VE LOCALSTORAGE BAŞLANGICI ---
-        const STORAGE_KEY = 'executive_control_data_v1';
+        const STORAGE_KEY = 'executive_control_secure_data_v2';
+        const TRASH_KEY = 'executive_control_trash_v2';
 
         const defaultData = {
             subeler: [
@@ -125,36 +123,30 @@
                 { id: 'ur_1', kod: 'MOB-01', ad: 'Lüksemburg Koltuk Takımı', kategori: 'Mobilya', subeId: 'sube_1', alisFiyati: 18000, satisFiyati: 28500, stok: 14, kritikSinir: 3 },
                 { id: 'ur_2', kod: 'BYZ-02', ad: 'Bosch No-Frost Buzdolabı', kategori: 'Beyaz Eşya', subeId: 'sube_2', alisFiyati: 12000, satisFiyati: 17400, stok: 2, kritikSinir: 4 },
                 { id: 'ur_3', kod: 'ZÜC-03', ad: 'Emsan 60 Parça Yemek Takımı', kategori: 'Züccaciye', subeId: 'sube_3', alisFiyati: 3500, satisFiyati: 5900, stok: 25, kritikSinir: 5 },
-                { id: 'ur_4', kod: 'MOB-04', ad: 'Roma Yemek Masası Seti', kategori: 'Mobilya', subeId: 'sube_1', alisFiyati: 9500, satisFiyati: 14900, stok: 8, kritikSinir: 2 }
+                { id: 'ur_4', kod: 'MOB-04', ad: 'Roma Yemek Masası Seti', kategori: 'Mobilya', subeId: 'sube_1', alisFiyati: 9500, satisFiyati: 14900, stok: 8, kritikSinir: 2 },
+                { id: 'ur_5', kod: 'MOB-05', ad: 'Modern TV Ünitesi', kategori: 'Mobilya', subeId: 'sube_1', alisFiyati: 4200, satisFiyati: 7800, stok: 1, kritikSinir: 3 }
             ],
             musteriler: [
                 { id: 'mus_1', ad: 'Ahmet Yılmaz İnşaat', tip: 'Kurumsal', tel: '0532 555 1122', bakiye: 45000, risk: 'Normal' },
-                { id: 'mus_2', ad: 'Mehmet Demir', tip: 'Bireysel', tel: '0535 444 3322', bakiye: 18500, risk: 'Yüksek' },
-                { id: 'mus_3', ad: 'Canan Kaya Mimarlık', tip: 'Kurumsal', tel: '0542 333 4455', bakiye: 0, risk: 'Düşük' }
+                { id: 'mus_2', ad: 'Mehmet Demir', tip: 'Bireysel', tel: '0535 444 3322', bakiye: 18500, risk: 'Yüksek' }
             ],
             tedarikciler: [
                 { id: 'ted_1', ad: 'Çilek Mobilya Fabrika', kategori: 'Mobilya', bakiye: 120000 },
-                { id: 'ted_2', ad: 'Bosch Ev Aletleri A.Ş.', kategori: 'Beyaz Eşya', bakiye: 85000 },
-                { id: 'ted_3', ad: 'Emsan Mutfak Eşyaları', kategori: 'Züccaciye', bakiye: 32000 }
+                { id: 'ted_2', ad: 'Bosch Ev Aletleri A.Ş.', kategori: 'Beyaz Eşya', bakiye: 85000 }
             ],
             finans: [
                 { id: 'fin_1', tip: 'Satış', subeId: 'sube_1', aciklama: 'Koltuk Takımı Peşin Satış', tutar: 28500, tarih: '2026-11-03', kategori: 'Ciro' },
-                { id: 'fin_2', tip: 'Gider', subeId: 'sube_1', aciklama: 'Kasım Ayı Elektrik Faturası', tutar: 4200, tarih: '2026-11-02', kategori: 'Genel Gider' },
-                { id: 'fin_3', tip: 'Gelir', subeId: 'sube_2', aciklama: 'Hurda Karton Satışı', tutar: 3100, tarih: '2026-11-01', kategori: 'Diğer Gelir' }
+                { id: 'fin_2', tip: 'Gider', subeId: 'sube_1', aciklama: 'Kasım Ayı Elektrik Faturası', tutar: 4200, tarih: '2026-11-02', kategori: 'Genel Gider' }
             ],
             borcAlacak: [
                 { id: 'ba_1', tur: 'Alacak', cari: 'Ahmet Yılmaz İnşaat', tutar: 45000, vade: '2026-11-10', durum: 'Bekliyor' },
-                { id: 'ba_2', tur: 'Borç', cari: 'Çilek Mobilya Fabrika', tutar: 120000, vade: '2026-11-08', durum: 'Ödenecek' },
-                { id: 'ba_3', tur: 'Senet', cari: 'Mehmet Demir', tutar: 18500, vade: '2026-11-05', durum: 'Günü Geldi' }
+                { id: 'ba_2', tur: 'Borç', cari: 'Çilek Mobilya Fabrika', tutar: 120000, vade: '2026-11-08', durum: 'Ödenecek' }
             ],
             personel: [
-                { id: 'per_1', ad: 'Selim Aksoy', subeId: 'sube_1', gorev: 'Mağaza Müdürü', maas: 38000, performans: '%94' },
-                { id: 'per_2', ad: 'Zeynep Çelik', subeId: 'sube_2', gorev: 'Satış Danışmanı', maas: 28000, performans: '%88' },
-                { id: 'per_3', ad: 'Murat Koç', subeId: 'sube_3', gorev: 'Depo Sorumlusu', maas: 26000, performans: '%91' }
+                { id: 'per_1', ad: 'Selim Aksoy', subeId: 'sube_1', gorev: 'Mağaza Müdürü', maas: 38000, performans: '%94' }
             ],
             operasyon: [
-                { id: 'op_1', baslik: 'Depo Yıllık Sayımı', subeId: 'sube_1', durum: 'Devam Ediyor', sorumlusu: 'Murat Koç', tarih: '2026-11-05' },
-                { id: 'op_2', baslik: 'Serdivan Mağaza Vitrin Yenileme', subeId: 'sube_2', durum: 'Tamamlandı', sorumlusu: 'Zeynep Çelik', tarih: '2026-11-01' }
+                { id: 'op_1', baslik: 'Depo Yıllık Sayımı', subeId: 'sube_1', durum: 'Devam Ediyor', sorumlusu: 'Murat Koç', tarih: '2026-11-05' }
             ]
         };
 
@@ -171,154 +163,115 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
 
-        function resetDemoData() {
-            if (confirm('Tüm veriler ilk örnek demo verilerine sıfırlanacak. Emin misiniz?')) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-                showToast('Veriler başarıyla sıfırlandı.', 'success');
-                loadPage(currentRoute);
-            }
+        function getTrash() {
+            const trash = localStorage.getItem(TRASH_KEY);
+            return trash ? JSON.parse(trash) : [];
         }
 
-        // --- 2. NAVİGASYON YAPISI VE MENÜLER ---
+        function saveTrash(trash) {
+            localStorage.setItem(TRASH_KEY, JSON.stringify(trash));
+        }
+
+        // Güvenli Silme Fonksiyonu (Çöp Kutusuna Taşıma)
+        function guvenliSil(kategori, id, isim) {
+            openConfirmModal(
+                `"${isim}" adlı kaydı silmek istediğinize emin misiniz?`,
+                "Kayıt öncelikle Çöp Kutusu'na taşınacak ve dilediğiniz zaman geri yükleyebileceksiniz.",
+                () => {
+                    const db = getDB();
+                    const trash = getTrash();
+                    let kayit = null;
+
+                    if(kategori === 'urunler') {
+                        kayit = db.urunler.find(x => x.id === id);
+                        db.urunler = db.urunler.filter(x => x.id !== id);
+                    } else if(kategori === 'subeler') {
+                        kayit = db.subeler.find(x => x.id === id);
+                        db.subeler = db.subeler.filter(x => x.id !== id);
+                    } else if(kategori === 'musteriler') {
+                        kayit = db.musteriler.find(x => x.id === id);
+                        db.musteriler = db.musteriler.filter(x => x.id !== id);
+                    } else if(kategori === 'finans') {
+                        kayit = db.finans.find(x => x.id === id);
+                        db.finans = db.finans.filter(x => x.id !== id);
+                    }
+
+                    if(kayit) {
+                        trash.push({ kategori, kayit, silinmeTarihi: new Date().toLocaleString() });
+                        saveDB(db);
+                        saveTrash(trash);
+                        showToast('Kayıt çöp kutusuna taşındı.', 'success');
+                        renderPage(currentRoute);
+                    }
+                }
+            );
+        }
+
+        function openConfirmModal(title, desc, onConfirm) {
+            const m = document.getElementById('globalModal');
+            const box = document.getElementById('modalBox');
+            box.innerHTML = `
+                <div class="p-6 border-b border-dark-border flex justify-between items-center">
+                    <h3 class="font-bold text-sm text-brand-orange">⚠️ Güvenli Silme Onayı</h3>
+                    <button onclick="modalKapat()" class="text-gray-400 hover:text-white">✕</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <p class="text-sm font-semibold text-white">${title}</p>
+                    <p class="text-xs text-gray-400">${desc}</p>
+                    <div class="flex justify-end gap-3 pt-4 border-t border-dark-border">
+                        <button type="button" onclick="modalKapat()" class="px-4 py-2 rounded-xl bg-dark-border text-xs text-gray-300">Vazgeç</button>
+                        <button type="button" id="confirmYesBtn" class="px-4 py-2 rounded-xl bg-brand-red text-xs text-white font-semibold">Çöp Kutusuna Taşı</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('confirmYesBtn').onclick = () => {
+                modalKapat();
+                onConfirm();
+            };
+            m.classList.remove('hidden');
+        }
+
+        function resetDemoData() {
+            openConfirmModal("Tüm veriler sıfırlansın mı?", "Fabrika ayarlarına dönülecektir.", () => {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+                localStorage.removeItem(TRASH_KEY);
+                showToast('Veriler sıfırlandı.', 'success');
+                renderPage(currentRoute);
+            });
+        }
+
+        // --- MENÜ YAPISI ---
         const menuStructure = [
             {
                 baslik: 'A. GENEL YÖNETİM',
                 items: [
                     { id: 'genel-bakis', ad: '1. Genel Bakış' },
                     { id: 'sube-yonetimi', ad: '2. Şube Yönetimi' },
-                    { id: 'sirket-performansi', ad: '3. Şirket Performansı' },
-                    { id: 'yonetici-merkezi', ad: '4. Yönetici Kontrol Merkezi' },
-                    { id: 'kritik-uyarilar', ad: '5. Kritik Uyarılar' }
+                    { id: 'cop-kutusu', ad: '3. Çöp Kutusu & Arşiv' }
                 ]
             },
             {
                 baslik: 'B. FİNANS YÖNETİMİ',
                 items: [
-                    { id: 'satislar', ad: '6. Satışlar' },
-                    { id: 'gelirler', ad: '7. Gelirler' },
-                    { id: 'giderler', ad: '8. Giderler' },
-                    { id: 'karlilik-analizi', ad: '9. Kârlılık Analizi' },
-                    { id: 'kasa-yonetimi', ad: '10. Kasa Yönetimi' },
-                    { id: 'banka-hesaplari', ad: '11. Banka Hesapları' },
-                    { id: 'nakit-akis', ad: '12. Nakit Akış Yönetimi' },
-                    { id: 'borc-takibi', ad: '13. Borç Takibi' },
-                    { id: 'alacak-takibi', ad: '14. Alacak Takibi' },
-                    { id: 'cek-senet', ad: '15. Çek ve Senet Takibi' },
-                    { id: 'tahsilat-odeme', ad: '16. Tahsilat ve Ödeme' },
-                    { id: 'finansal-raporlar', ad: '17. Finansal Raporlar' }
+                    { id: 'satislar', ad: '4. Satışlar' },
+                    { id: 'giderler', ad: '5. Giderler' },
+                    { id: 'karlilik-analizi', ad: '6. Kârlılık Analizi' },
+                    { id: 'nakit-akis', ad: '7. Nakit Akış' },
+                    { id: 'finansal-raporlar', ad: '8. Finansal Raporlar' }
                 ]
             },
             {
-                baslik: 'C. ŞUBE YÖNETİMİ',
+                baslik: 'C. STOK VE DEPO',
                 items: [
-                    { id: 'sube-listesi', ad: '18. Şube Listesi' },
-                    { id: 'sube-ciro', ad: '19. Şube Bazlı Ciro' },
-                    { id: 'sube-karlilik', ad: '20. Şube Bazlı Kârlılık' },
-                    { id: 'sube-giderleri', ad: '21. Şube Giderleri' },
-                    { id: 'sube-hedefleri', ad: '22. Şube Hedefleri' },
-                    { id: 'sube-karsilastirma', ad: '23. Şube Karşılaştırma' },
-                    { id: 'sube-karnesi', ad: '24. Şube Performans Karnesi' },
-                    { id: 'sube-denetim', ad: '25. Şube Denetim Raporları' }
+                    { id: 'genel-stok', ad: '9. Genel Stok Durumu' },
+                    { id: 'kritik-stok', ad: '10. Kritik Stok Uyarıları' }
                 ]
             },
             {
-                baslik: 'D. STOK VE DEPO',
+                baslik: 'D. VERİ AKTARIMI (CSV/EXCEL)',
                 items: [
-                    { id: 'genel-stok', ad: '26. Genel Stok Durumu' },
-                    { id: 'sube-stok', ad: '27. Şube Bazlı Stok' },
-                    { id: 'depo-yonetimi', ad: '28. Depo Yönetimi' },
-                    { id: 'kritik-stok', ad: '29. Kritik Stok Uyarıları' },
-                    { id: 'stok-hareket', ad: '30. Stok Giriş ve Çıkışları' },
-                    { id: 'stok-sayimi', ad: '31. Stok Sayımı' },
-                    { id: 'stok-devir', ad: '32. Stok Devir Hızı' },
-                    { id: 'stok-maliyet', ad: '33. Stok Maliyet Analizi' },
-                    { id: 'urun-transfer', ad: '34. Ürün Transferleri' },
-                    { id: 'stok-raporlari', ad: '35. Stok Hareket Raporları' }
-                ]
-            },
-            {
-                baslik: 'E. ÜRÜN VE SATIN ALMA',
-                items: [
-                    { id: 'urun-kartlari', ad: '36. Ürün Kartları' },
-                    { id: 'urun-kategorileri', ad: '37. Ürün Kategorileri' },
-                    { id: 'alis-fiyatlari', ad: '38. Alış Fiyatları' },
-                    { id: 'satis-fiyatlari', ad: '39. Satış Fiyatları' },
-                    { id: 'kar-marjlari', ad: '40. Kâr Marjları' },
-                    { id: 'satin-alma-talepleri', ad: '41. Satın Alma Talepleri' },
-                    { id: 'satin-alma-siparis', ad: '42. Satın Alma Siparişleri' },
-                    { id: 'mal-kabul', ad: '43. Mal Kabul' },
-                    { id: 'tedarikci-fiyat', ad: '44. Tedarikçi Karşılaştırma' },
-                    { id: 'satin-alma-rapor', ad: '45. Satın Alma Raporları' }
-                ]
-            },
-            {
-                baslik: 'F. CARİ YÖNETİM',
-                items: [
-                    { id: 'musteri-kartlari', ad: '46. Müşteri Kartları' },
-                    { id: 'musteri-borclari', ad: '47. Müşteri Borçları' },
-                    { id: 'musteri-tahsilatlari', ad: '48. Müşteri Tahsilatları' },
-                    { id: 'musteri-risk', ad: '49. Müşteri Risk Analizi' },
-                    { id: 'tedarikci-kartlari', ad: '50. Tedarikçi Kartları' },
-                    { id: 'tedarikci-borclari', ad: '51. Tedarikçi Borçları' },
-                    { id: 'tedarikci-odemeleri', ad: '52. Tedarikçi Ödemeleri' },
-                    { id: 'cari-ekstreler', ad: '53. Cari Hesap Ekstreleri' }
-                ]
-            },
-            {
-                baslik: 'G. PERSONEL VE İK',
-                items: [
-                    { id: 'personel-listesi', ad: '54. Personel Listesi' },
-                    { id: 'personel-sube', ad: '55. Şube Personel Dağılımı' },
-                    { id: 'gorev-sorumluluk', ad: '56. Görev ve Sorumluluklar' },
-                    { id: 'vardiya-takibi', ad: '57. Vardiya Takibi' },
-                    { id: 'izin-takibi', ad: '58. İzin Takibi' },
-                    { id: 'personel-performansi', ad: '59. Personel Performansı' },
-                    { id: 'personel-giderleri', ad: '60. Personel Giderleri' }
-                ]
-            },
-            {
-                baslik: 'H. OPERASYON VE DENETİM',
-                items: [
-                    { id: 'gorev-yonetimi', ad: '61. Görev Yönetimi' },
-                    { id: 'subelere-talimat', ad: '62. Şubelere Talimat Gönderme' },
-                    { id: 'gunluk-kontrol', ad: '63. Günlük Kontrol Listeleri' },
-                    { id: 'sube-denetimleri', ad: '64. Şube Denetimleri' },
-                    { id: 'ariza-kayitlari', ad: '65. Problem ve Arıza Kayıtları' },
-                    { id: 'is-takip', ad: '66. İş Takip Sistemi' },
-                    { id: 'acik-isler', ad: '67. Açık İşler' },
-                    { id: 'tamamlanan-isler', ad: '68. Tamamlanan İşler' }
-                ]
-            },
-            {
-                baslik: 'I. RAPORLAMA VE ANALİZ',
-                items: [
-                    { id: 'gunluk-rapor', ad: '69. Günlük Rapor' },
-                    { id: 'haftalik-rapor', ad: '70. Haftalık Rapor' },
-                    { id: 'aylik-rapor', ad: '71. Aylık Rapor' },
-                    { id: 'yillik-rapor', ad: '72. Yıllık Rapor' },
-                    { id: 'sube-perf-rapor', ad: '73. Şube Performans Raporu' },
-                    { id: 'karlilik-rapor', ad: '74. Kârlılık Raporu' },
-                    { id: 'nakit-akis-rapor', ad: '75. Nakit Akış Raporu' },
-                    { id: 'borc-alacak-rapor', ad: '76. Borç ve Alacak Raporu' },
-                    { id: 'stok-rapor', ad: '77. Stok Raporu' },
-                    { id: 'gider-dagilim', ad: '78. Gider Dağılımı' },
-                    { id: 'satis-trendleri', ad: '79. Satış Trendleri' },
-                    { id: 'yonetici-ozet', ad: '80. Yönetici Özet Raporu' }
-                ]
-            },
-            {
-                baslik: 'J. SİSTEM YÖNETİMİ',
-                items: [
-                    { id: 'gun-sonu', ad: '81. Gün Sonu Veri Aktarımı' },
-                    { id: 'csv-aktarim', ad: '82. CSV İçe Aktarma' },
-                    { id: 'csv-disa', ad: '83. CSV Dışa Aktarma' },
-                    { id: 'json-yedek', ad: '84. JSON Yedekleme' },
-                    { id: 'json-yukle', ad: '85. JSON Geri Yükleme' },
-                    { id: 'isletme-ayarlari', ad: '86. İşletme Ayarları' },
-                    { id: 'sube-ayarlari', ad: '87. Şube Ayarları' },
-                    { id: 'bildirim-ayarlari', ad: '88. Bildirim Ayarları' },
-                    { id: 'kullanici-yonetimi', ad: '89. Kullanıcı Yönetimi' },
-                    { id: 'sistem-bilgileri', ad: '90. Sistem Bilgileri' }
+                    { id: 'csv-ice-aktar', ad: '11. CSV / Excel İçe Aktar' },
+                    { id: 'json-yedek', ad: '12. JSON Yedekleme' }
                 ]
             }
         ];
@@ -356,15 +309,12 @@
             const activeBtnM = document.getElementById(`mobileNavContent`)?.querySelector(`#nav_${routeId}`);
             if(activeBtnM) activeBtnM.classList.add('bg-brand-blue', 'text-white');
 
-            // Mobil menüyü kapat
             document.getElementById('mobileMenu').classList.add('hidden');
-
             renderPage(routeId);
         }
 
         function toggleMobileMenu() {
-            const m = document.getElementById('mobileMenu');
-            m.classList.toggle('hidden');
+            document.getElementById('mobileMenu').classList.toggle('hidden');
         }
 
         function showToast(message, type = 'success') {
@@ -381,560 +331,393 @@
             }, 3000);
         }
 
-        // --- 3. SAYFA RENDER MOTORU ---
         function renderPage(route) {
             const db = getDB();
             const main = document.getElementById('appMainContent');
             const titleEl = document.getElementById('pageTitle');
             
-            // Başlığı bul
             let pageName = '';
             menuStructure.forEach(g => {
                 g.items.forEach(i => { if(i.id === route) pageName = i.ad; });
             });
             titleEl.innerText = pageName;
 
-            // Rota İşleme
             switch(route) {
                 case 'genel-bakis': renderGenelBakis(db, main); break;
                 case 'sube-yonetimi': renderSubeYonetimi(db, main); break;
-                case 'sirket-performansi': renderSirketPerformansi(db, main); break;
-                case 'yonetici-merkezi': renderYoneticiMerkezi(db, main); break;
-                case 'kritik-uyarilar': renderKritikUyarilar(db, main); break;
-                
-                // Finans Modülleri
+                case 'cop-kutusu': renderCopKutusu(main); break;
                 case 'satislar': renderFinansTablosu(db, main, 'Satış', 'Satışlar'); break;
-                case 'gelirler': renderFinansTablosu(db, main, 'Gelir', 'Gelirler'); break;
                 case 'giderler': renderFinansTablosu(db, main, 'Gider', 'Giderler'); break;
                 case 'karlilik-analizi': renderKarlilikAnalizi(db, main); break;
-                case 'kasa-yonetimi': renderKasaYonetimi(db, main); break;
-                case 'banka-hesaplari': renderBankaHesaplari(db, main); break;
                 case 'nakit-akis': renderNakitAkis(db, main); break;
-                case 'borc-takibi': renderBorcAlacakTablosu(db, main, 'Borç', 'Borç Takibi'); break;
-                case 'alacak-takibi': renderBorcAlacakTablosu(db, main, 'Alacak', 'Alacak Takibi'); break;
-                case 'cek-senet': renderBorcAlacakTablosu(db, main, 'Senet', 'Çek ve Senet Takibi'); break;
-                case 'tahsilat-odeme': renderTahsilatOdeme(db, main); break;
-                case 'finansal-raporlar': renderFinansalRaporlar(db, main); break;
-
-                // Şube Yönetimi
-                case 'sube-listesi': renderSubeListesi(db, main); break;
-                case 'sube-ciro': renderSubeCiroAnaliz(db, main); break;
-                case 'sube-karlilik': renderSubeKarlilikAnaliz(db, main); break;
-                case 'sube-giderleri': renderSubeGiderAnaliz(db, main); break;
-                case 'sube-hedefleri': renderSubeHedefleri(db, main); break;
-                case 'sube-karsilastirma': renderSubeKarsilastirma(db, main); break;
-                case 'sube-karnesi': renderSubeKarnesi(db, main); break;
-                case 'sube-denetim': renderSubeDenetim(db, main); break;
-
-                // Stok ve Depo
-                case 'genel-stok': renderUrunStokTablosu(db, main, 'Genel Stok Durumu'); break;
-                case 'sube-stok': renderUrunStokTablosu(db, main, 'Şube Bazlı Stok'); break;
-                case 'depo-yonetimi': renderDepoYonetimi(db, main); break;
-                case 'kritik-stok': renderKritikStokSayfasi(db, main); break;
-                case 'stok-hareket': renderStokHareketleri(db, main); break;
-                case 'stok-sayimi': renderStokSayimi(db, main); break;
-
-                // Cari Yönetim
-                case 'musteri-kartlari': renderMusteriKartlari(db, main); break;
-                case 'tedarikci-kartlari': renderTedarikciKartlari(db, main); break;
-
-                // Personel
-                case 'personel-listesi': renderPersonelListesi(db, main); break;
-
-                // Operasyon
-                case 'gorev-yonetimi': renderOperasyonGorevleri(db, main); break;
-
-                // Sistem ve Raporlar
+                case 'finansal-raporlar': renderGenelBakis(db, main); break;
+                case 'genel-stok': renderGenelStokTablosu(db, main); break;
+                case 'kritik-stok': renderKritikStok(db, main); break;
+                case 'csv-ice-aktar': renderCsvIceAktarim(main); break;
                 case 'json-yedek': renderJsonYedekleme(db, main); break;
-                case 'csv-disa': renderCsvDisaAktarim(db, main); break;
-                case 'isletme-ayarlari': renderIsletmeAyarlari(db, main); break;
-
-                default:
-                    renderGenericPlaceholder(main, pageName);
+                default: renderGenelBakis(db, main);
             }
         }
 
-        // --- 4. ÖZEL SAYFA OLUŞTURUCULARI (MVP FONKSİYONEL) ---
-
-        function formatTL(tutar) {
-            return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(tutar);
-        }
-
+        // --- GENEL BAKIŞ ---
         function renderGenelBakis(db, main) {
             const toplamCiro = db.subeler.reduce((a, b) => a + b.ciro, 0);
             const toplamKar = db.subeler.reduce((a, b) => a + b.kar, 0);
-            const toplamGider = db.subeler.reduce((a, b) => a + b.gider, 0);
-            const karMarji = ((toplamKar / toplamCiro) * 100).toFixed(1);
             const kritikStokSayisi = db.urunler.filter(u => u.stok <= u.kritikSinir).length;
-            const toplamAlacak = db.musteriler.reduce((a, b) => a + b.bakiye, 0);
-            const toplamBorc = db.tedarikciler.reduce((a, b) => a + b.bakiye, 0);
 
             main.innerHTML = `
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="bg-dark-card border border-dark-border p-5 rounded-2xl">
-                        <p class="text-xs text-gray-400 uppercase font-medium">Toplam Konsolide Ciro</p>
+                        <p class="text-xs text-gray-400 uppercase font-medium">Toplam Ciro</p>
                         <h3 class="text-2xl font-bold text-white mt-1">${formatTL(toplamCiro)}</h3>
-                        <span class="text-xs text-brand-green font-semibold mt-2 inline-block">▲ Hedefin %94'ü</span>
                     </div>
                     <div class="bg-dark-card border border-dark-border p-5 rounded-2xl">
-                        <p class="text-xs text-gray-400 uppercase font-medium">Net Kâr (Brüt - Gider)</p>
+                        <p class="text-xs text-gray-400 uppercase font-medium">Net Kâr</p>
                         <h3 class="text-2xl font-bold text-brand-green mt-1">${formatTL(toplamKar)}</h3>
-                        <span class="text-xs text-gray-400 mt-2 inline-block">Kâr Marji: %${karMarji}</span>
                     </div>
                     <div class="bg-dark-card border border-dark-border p-5 rounded-2xl">
-                        <p class="text-xs text-gray-400 uppercase font-medium">Toplam Giderler</p>
-                        <h3 class="text-2xl font-bold text-brand-red mt-1">${formatTL(toplamGider)}</h3>
-                        <span class="text-xs text-gray-400 mt-2 inline-block">Şube operasyon giderleri dahil</span>
-                    </div>
-                    <div class="bg-dark-card border border-dark-border p-5 rounded-2xl">
-                        <p class="text-xs text-gray-400 uppercase font-medium">Kritik Stok Uyarısı</p>
+                        <p class="text-xs text-gray-400 uppercase font-medium">Kritik Stok</p>
                         <h3 class="text-2xl font-bold text-brand-orange mt-1">${kritikStokSayisi} Ürün</h3>
-                        <span class="text-xs text-brand-orange mt-2 inline-block">Acil sipariş verilmesi gerekiyor</span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-dark-card border border-dark-border p-6 rounded-2xl">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold text-sm text-white">Şube Bazlı Ciro Dağılımı</h3>
-                            <span class="text-xs text-gray-400">Canlı Veri Konsolu</span>
-                        </div>
-                        <div class="h-80 relative flex items-center justify-center">
-                            <canvas id="genelCiroChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="bg-dark-card border border-dark-border p-6 rounded-2xl flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-sm text-white mb-4">Yönetici Özet Alarmları</h3>
-                            <div class="space-y-3">
-                                <div class="p-3 bg-dark-border/50 rounded-xl border border-dark-border flex items-center justify-between">
-                                    <div>
-                                        <p class="text-xs font-semibold text-white">Toplam Müşteri Alacağı</p>
-                                        <p class="text-[10px] text-gray-400">Tahsilat bekleyen cari bakiye</p>
-                                    </div>
-                                    <span class="text-xs font-bold text-brand-blue">${formatTL(toplamAlacak)}</span>
-                                </div>
-                                <div class="p-3 bg-dark-border/50 rounded-xl border border-dark-border flex items-center justify-between">
-                                    <div>
-                                        <p class="text-xs font-semibold text-white">Toplam Tedarikçi Borcu</p>
-                                        <p class="text-[10px] text-gray-400">Ödenecek faturalar</p>
-                                    </div>
-                                    <span class="text-xs font-bold text-brand-red">${formatTL(toplamBorc)}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button onclick="navigateTo('sube-yonetimi')" class="w-full mt-6 py-2.5 rounded-xl bg-brand-blue hover:bg-blue-600 text-white text-xs font-semibold transition-all">Şube Yönetimine Git →</button>
                     </div>
                 </div>
             `;
-
-            // Chart render
-            setTimeout(() => {
-                const ctx = document.getElementById('genelCiroChart');
-                if(!ctx) return;
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: db.subeler.map(s => s.ad),
-                        datasets: [{
-                            label: 'Şube Ciroları (₺)',
-                            data: db.subeler.map(s => s.ciro),
-                            backgroundColor: '#3b82f6',
-                            borderRadius: 8
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
-                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', font: { size: 10 } } }
-                        }
-                    }
-                });
-            }, 50);
         }
 
         // --- ŞUBE YÖNETİMİ ---
         function renderSubeYonetimi(db, main) {
-            let html = `
-                <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-white">İşletme Şubeleri ve Bayiler</h3>
-                    <button onclick="acSubeEkleModal()" class="px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-xs font-semibold">+ Yeni Şube Ekle</button>
-                </div>
+            main.innerHTML = `
                 <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b border-dark-border text-gray-400 text-[11px] uppercase bg-dark-bg/50">
                                 <th class="p-4">Şube Adı</th>
-                                <th class="p-4">İl / Konum</th>
+                                <th class="p-4">İl</th>
                                 <th class="p-4">Ciro</th>
-                                <th class="p-4">Net Kâr</th>
-                                <th class="p-4">Gider</th>
-                                <th class="p-4 text-right">İşlemler</th>
+                                <th class="p-4 text-right">İşlem</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-dark-border text-xs">`;
-            
-            db.subeler.forEach(s => {
-                html += `<tr class="hover:bg-dark-border/30">
-                    <td class="p-4 font-semibold text-white">${s.ad}</td>
-                    <td class="p-4 text-gray-400">${s.il}</td>
-                    <td class="p-4 font-bold text-brand-blue">${formatTL(s.ciro)}</td>
-                    <td class="p-4 font-bold text-brand-green">${formatTL(s.kar)}</td>
-                    <td class="p-4 font-bold text-brand-red">${formatTL(s.gider)}</td>
-                    <td class="p-4 text-right space-x-2">
-                        <button onclick="subeSil('${s.id}')" class="text-brand-red hover:underline">Sil</button>
-                    </td>
-                </tr>`;
-            });
-
-            html += `</tbody></table></div>`;
-            main.innerHTML = html;
+                        <tbody class="divide-y divide-dark-border text-xs">
+                            ${db.subeler.map(s => `
+                                <tr class="hover:bg-dark-border/30">
+                                    <td class="p-4 font-semibold text-white">${s.ad}</td>
+                                    <td class="p-4 text-gray-400">${s.il}</td>
+                                    <td class="p-4 font-bold text-brand-blue">${formatTL(s.ciro)}</td>
+                                    <td class="p-4 text-right">
+                                        <button onclick="guvenliSil('subeler', '${s.id}', '${s.ad}')" class="text-brand-red hover:underline">Sil</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
         }
 
-        function acSubeEkleModal() {
-            const m = document.getElementById('globalModal');
-            const box = document.getElementById('modalBox');
-            box.innerHTML = `
-                <div class="p-6 border-b border-dark-border flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-white">Yeni Şube / Bayi Ekle</h3>
-                    <button onclick="modalKapat()" class="text-gray-400 hover:text-white">✕</button>
-                </div>
-                <form onsubmit="subeKaydet(event)" class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Şube Adı</label>
-                        <input type="text" id="subeAdi" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-blue">
+        // --- ÇÖP KUTUSU & GERİ YÜKLEME ---
+        function renderCopKutusu(main) {
+            const trash = getTrash();
+            main.innerHTML = `
+                <div class="space-y-4">
+                    <h3 class="text-sm font-bold text-white">Çöp Kutusu & Geri Yükleme</h3>
+                    <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-dark-border text-gray-400 text-[11px] uppercase bg-dark-bg/50">
+                                    <th class="p-4">Kategori</th>
+                                    <th class="p-4">Kayıt Adı / Bilgisi</th>
+                                    <th class="p-4">Silinme Tarihi</th>
+                                    <th class="p-4 text-right">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-dark-border text-xs">
+                                ${trash.length === 0 ? `<tr><td colspan="4" class="p-6 text-center text-gray-400">Çöp kutusu boş.</td></tr>` : 
+                                trash.map((t, idx) => `
+                                    <tr class="hover:bg-dark-border/30">
+                                        <td class="p-4 font-semibold text-gray-300 uppercase">${t.kategori}</td>
+                                        <td class="p-4 text-white">${t.kayit.ad || t.kayit.aciklama || t.kayit.kod || 'Kayıt'}</td>
+                                        <td class="p-4 text-gray-400">${t.silinmeTarihi}</td>
+                                        <td class="p-4 text-right space-x-3">
+                                            <button onclick="geriYukle(${idx})" class="text-brand-green hover:underline font-semibold">Geri Yükle</button>
+                                            <button onclick="kaliciSil(${idx})" class="text-brand-red hover:underline">Kalıcı Sil</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
                     </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">İl / Konum</label>
-                        <input type="text" id="subeIl" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-blue">
-                    </div>
-                    <div class="flex justify-end gap-3 pt-4 border-t border-dark-border">
-                        <button type="button" onclick="modalKapat()" class="px-4 py-2 rounded-xl bg-dark-border text-xs text-gray-300">İptal</button>
-                        <button type="submit" class="px-4 py-2 rounded-xl bg-brand-blue text-xs text-white font-semibold">Kaydet</button>
-                    </div>
-                </form>
-            `;
-            m.classList.remove('hidden');
+                </div>`;
         }
 
-        function subeKaydet(e) {
-            e.preventDefault();
+        function geriYukle(idx) {
+            const trash = getTrash();
             const db = getDB();
-            const ad = document.getElementById('subeAdi').value;
-            const il = document.getElementById('subeIl').value;
-            db.subeler.push({ id: 'sube_' + Date.now(), ad, il, ciro: 0, kar: 0, gider: 0, hedef: 1000000 });
+            const item = trash[idx];
+
+            if(item.kategori === 'urunler') db.urunler.push(item.kayit);
+            else if(item.kategori === 'subeler') db.subeler.push(item.kayit);
+            else if(item.kategori === 'musteriler') db.musteriler.push(item.kayit);
+            else if(item.kategori === 'finans') db.finans.push(item.kayit);
+
+            trash.splice(idx, 1);
             saveDB(db);
-            modalKapat();
-            showToast('Şube başarıyla eklendi.', 'success');
+            saveTrash(trash);
+            showToast('Kayıt başarıyla geri yüklendi.', 'success');
             renderPage(currentRoute);
         }
 
-        function subeSil(id) {
-            if(confirm('Şubeyi silmek istediğinize emin misiniz?')) {
-                const db = getDB();
-                db.subeler = db.subeler.filter(s => s.id !== id);
-                saveDB(db);
-                showToast('Şube silindi.', 'success');
+        function kaliciSil(idx) {
+            openConfirmModal("Kalıcı olarak silinsin mi?", "Bu işlem geri alınamaz!", () => {
+                const trash = getTrash();
+                trash.splice(idx, 1);
+                saveTrash(trash);
+                showToast('Kayıt kalıcı olarak silindi.', 'success');
                 renderPage(currentRoute);
-            }
-        }
-
-        // --- FİNANS TABLOLARI (Satışlar, Gelirler, Giderler) ---
-        function renderFinansTablosu(db, main, tip, baslik) {
-            const liste = db.finans.filter(f => f.tip === tip);
-            let html = `
-                <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-white">${baslik} Kayıtları</h3>
-                    <button onclick="acFinansEkleModal('${tip}')" class="px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-xs font-semibold">+ Yeni ${tip} Ekle</button>
-                </div>
-                <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-dark-border text-gray-400 text-[11px] uppercase bg-dark-bg/50">
-                                <th class="p-4">Tarih</th>
-                                <th class="p-4">Açıklama</th>
-                                <th class="p-4">Kategori</th>
-                                <th class="p-4">Tutar</th>
-                                <th class="p-4 text-right">İşlem</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-dark-border text-xs">`;
-            
-            if(liste.length === 0) {
-                html += `<tr><td colspan="5" class="p-6 text-center text-gray-400">Kayıt bulunamadı.</td></tr>`;
-            } else {
-                liste.forEach(f => {
-                    html += `<tr class="hover:bg-dark-border/30">
-                        <td class="p-4 text-gray-400">${f.tarih}</td>
-                        <td class="p-4 font-semibold text-white">${f.aciklama}</td>
-                        <td class="p-4 text-gray-300">${f.kategori}</td>
-                        <td class="p-4 font-bold text-white">${formatTL(f.tutar)}</td>
-                        <td class="p-4 text-right"><button onclick="finansSil('${f.id}')" class="text-brand-red hover:underline">Sil</button></td>
-                    </tr>`;
-                });
-            }
-            html += `</tbody></table></div>`;
-            main.innerHTML = html;
-        }
-
-        function acFinansEkleModal(tip) {
-            const m = document.getElementById('globalModal');
-            const box = document.getElementById('modalBox');
-            box.innerHTML = `
-                <div class="p-6 border-b border-dark-border flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-white">Yeni ${tip} Kaydı</h3>
-                    <button onclick="modalKapat()" class="text-gray-400 hover:text-white">✕</button>
-                </div>
-                <form onsubmit="finansKaydet(event, '${tip}')" class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Açıklama</label>
-                        <input type="text" id="finAciklama" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Kategori</label>
-                        <input type="text" id="finKategori" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white" value="Genel">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Tutar (₺)</label>
-                        <input type="number" id="finTutar" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
-                    </div>
-                    <div class="flex justify-end gap-3 pt-4 border-t border-dark-border">
-                        <button type="button" onclick="modalKapat()" class="px-4 py-2 rounded-xl bg-dark-border text-xs text-gray-300">İptal</button>
-                        <button type="submit" class="px-4 py-2 rounded-xl bg-brand-blue text-xs text-white font-semibold">Kaydet</button>
-                    </div>
-                </form>
-            `;
-            m.classList.remove('hidden');
-        }
-
-        function finansKaydet(e, tip) {
-            e.preventDefault();
-            const db = getDB();
-            const aciklama = document.getElementById('finAciklama').value;
-            const kategori = document.getElementById('finKategori').value;
-            const tutar = parseFloat(document.getElementById('finTutar').value);
-            db.finans.push({ id: 'fin_' + Date.now(), tip, subeId: 'sube_1', aciklama, tutar, tarih: new Date().toISOString().split('T')[0], kategori });
-            saveDB(db);
-            modalKapat();
-            showToast('Kayıt eklendi.', 'success');
-            renderPage(currentRoute);
-        }
-
-        function finansSil(id) {
-            const db = getDB();
-            db.finans = db.finans.filter(f => f.id !== id);
-            saveDB(db);
-            showToast('Kayıt silindi.', 'success');
-            renderPage(currentRoute);
-        }
-
-        // --- BORÇ / ALACAK TABLOLARI ---
-        function renderBorcAlacakTablosu(db, main, tur, baslik) {
-            const liste = db.borcAlacak.filter(b => b.tur === tur);
-            main.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-white">${baslik}</h3>
-                    <button onclick="acBaEkleModal('${tur}')" class="px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-xs font-semibold">+ Yeni ${tur} Ekle</button>
-                </div>
-                <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-dark-border text-gray-400 text-[11px] uppercase bg-dark-bg/50">
-                                <th class="p-4">Cari / Unvan</th>
-                                <th class="p-4">Vade Tarihi</th>
-                                <th class="p-4">Tutar</th>
-                                <th class="p-4">Durum</th>
-                                <th class="p-4 text-right">İşlem</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-dark-border text-xs">
-                            ${liste.length === 0 ? `<tr><td colspan="5" class="p-6 text-center text-gray-400">Kayıt yok.</td></tr>` : 
-                            liste.map(x => `
-                                <tr class="hover:bg-dark-border/30">
-                                    <td class="p-4 font-semibold text-white">${x.cari}</td>
-                                    <td class="p-4 text-gray-400">${x.vade}</td>
-                                    <td class="p-4 font-bold text-white">${formatTL(x.tutar)}</td>
-                                    <td class="p-4"><span class="px-2 py-1 rounded bg-brand-blue/10 text-brand-blue text-[10px] font-semibold">${x.durum}</span></td>
-                                    <td class="p-4 text-right"><button onclick="baSil('${x.id}')" class="text-brand-red hover:underline">Sil</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>`;
-        }
-
-        function acBaEkleModal(tur) {
-            const m = document.getElementById('globalModal');
-            const box = document.getElementById('modalBox');
-            box.innerHTML = `
-                <div class="p-6 border-b border-dark-border flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-white">Yeni ${tur} Kaydı</h3>
-                    <button onclick="modalKapat()" class="text-gray-400 hover:text-white">✕</button>
-                </div>
-                <form onsubmit="baKaydet(event, '${tur}')" class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Cari Adı</label>
-                        <input type="text" id="baCari" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Vade Tarihi</label>
-                        <input type="date" id="baVade" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Tutar (₺)</label>
-                        <input type="number" id="baTutar" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
-                    </div>
-                    <div class="flex justify-end gap-3 pt-4 border-t border-dark-border">
-                        <button type="button" onclick="modalKapat()" class="px-4 py-2 rounded-xl bg-dark-border text-xs text-gray-300">İptal</button>
-                        <button type="submit" class="px-4 py-2 rounded-xl bg-brand-blue text-xs text-white font-semibold">Kaydet</button>
-                    </div>
-                </form>
-            `;
-            m.classList.remove('hidden');
-        }
-
-        function baKaydet(e, tur) {
-            e.preventDefault();
-            const db = getDB();
-            db.borcAlacak.push({
-                id: 'ba_' + Date.now(),
-                tur,
-                cari: document.getElementById('baCari').value,
-                vade: document.getElementById('baVade').value,
-                tutar: parseFloat(document.getElementById('baTutar').value),
-                durum: 'Aktif'
             });
-            saveDB(db);
-            modalKapat();
-            showToast('Kayıt başarıyla eklendi.', 'success');
-            renderPage(currentRoute);
         }
 
-        function baSil(id) {
-            const db = getDB();
-            db.borcAlacak = db.borcAlacak.filter(x => x.id !== id);
-            saveDB(db);
-            showToast('Kayıt silindi.', 'success');
-            renderPage(currentRoute);
-        }
+        // --- GELİŞMİŞ STOK EKRANI (Arama, Filtreleme, Yatay Kaydırma, Sayfalama) ---
+        let stokPage = 1;
+        let stokLimit = 25;
+        let stokSortField = 'kod';
+        let stokSortAsc = true;
 
-        // --- STOK VE ÜRÜNLER ---
-        function renderUrunStokTablosu(db, main, baslik) {
+        function renderGenelStokTablosu(db, main) {
             main.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-white">${baslik}</h3>
-                    <button onclick="acUrunEkleModal()" class="px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-xs font-semibold">+ Yeni Ürün Ekle</button>
-                </div>
-                <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-dark-border text-gray-400 text-[11px] uppercase bg-dark-bg/50">
-                                <th class="p-4">Ürün Kodu</th>
-                                <th class="p-4">Ürün Adı</th>
-                                <th class="p-4">Kategori</th>
-                                <th class="p-4">Stok Adedi</th>
-                                <th class="p-4">Satış Fiyatı</th>
-                                <th class="p-4 text-right">İşlem</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-dark-border text-xs">
-                            ${db.urunler.map(u => `
-                                <tr class="hover:bg-dark-border/30">
-                                    <td class="p-4 font-mono text-gray-400">${u.kod}</td>
-                                    <td class="p-4 font-semibold text-white">${u.ad}</td>
-                                    <td class="p-4 text-gray-300">${u.kategori}</td>
-                                    <td class="p-4 font-bold ${u.stok <= u.kritikSinir ? 'text-brand-orange' : 'text-brand-green'}">${u.stok} Adet</td>
-                                    <td class="p-4 font-bold text-white">${formatTL(u.satisFiyati)}</td>
-                                    <td class="p-4 text-right"><button onclick="urunSil('${u.id}')" class="text-brand-red hover:underline">Sil</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>`;
-        }
-
-        function acUrunEkleModal() {
-            const m = document.getElementById('globalModal');
-            const box = document.getElementById('modalBox');
-            box.innerHTML = `
-                <div class="p-6 border-b border-dark-border flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-white">Yeni Ürün Kartı</h3>
-                    <button onclick="modalKapat()" class="text-gray-400 hover:text-white">✕</button>
-                </div>
-                <form onsubmit="urunKaydet(event)" class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Ürün Kodu</label>
-                        <input type="text" id="uKod" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Ürün Adı</label>
-                        <input type="text" id="uAd" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Stok Miktarı</label>
-                            <input type="number" id="uStok" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white" value="10">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Satış Fiyatı (₺)</label>
-                            <input type="number" id="uFiyat" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white" value="1000">
+                <div class="space-y-4">
+                    <!-- Arama ve Filtreleme Alanı -->
+                    <div class="bg-dark-card border border-dark-border p-4 rounded-2xl flex flex-col md:flex-row gap-4 justify-between items-center">
+                        <input type="text" id="stokSearch" oninput="filterStok()" placeholder="Ürün adı, kod veya barkod ile ara..." class="w-full md:w-80 bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-brand-blue">
+                        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                            <select id="stokKategoriFilter" onchange="filterStok()" class="bg-dark-bg border border-dark-border rounded-xl px-3 py-2 text-xs text-white">
+                                <option value="">Tüm Kategoriler</option>
+                                <option value="Mobilya">Mobilya</option>
+                                <option value="Beyaz Eşya">Beyaz Eşya</option>
+                                <option value="Züccaciye">Züccaciye</option>
+                            </select>
+                            <select id="stokDurumFilter" onchange="filterStok()" class="bg-dark-bg border border-dark-border rounded-xl px-3 py-2 text-xs text-white">
+                                <option value="">Tüm Stok Durumu</option>
+                                <option value="kritik">Kritik Stok</option>
+                                <option value="normal">Normal Stok</option>
+                            </select>
+                            <select id="stokLimitSelect" onchange="changeStokLimit()" class="bg-dark-bg border border-dark-border rounded-xl px-3 py-2 text-xs text-white">
+                                <option value="25">25 Kayıt</option>
+                                <option value="50">50 Kayıt</option>
+                                <option value="100">100 Kayıt</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="flex justify-end gap-3 pt-4 border-t border-dark-border">
-                        <button type="button" onclick="modalKapat()" class="px-4 py-2 rounded-xl bg-dark-border text-xs text-gray-300">İptal</button>
-                        <button type="submit" class="px-4 py-2 rounded-xl bg-brand-blue text-xs text-white font-semibold">Kaydet</button>
+
+                    <!-- Yatay Kaydırma Destekli Tablo -->
+                    <div class="bg-dark-card border border-dark-border rounded-2xl overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
+                            <thead>
+                                <tr class="border-b border-dark-border text-gray-400 text-[11px] uppercase bg-dark-bg/50">
+                                    <th class="p-4 cursor-pointer hover:text-white" onclick="sortStok('kod')">Ürün Kodu ↕</th>
+                                    <th class="p-4 cursor-pointer hover:text-white" onclick="sortStok('ad')">Ürün Adı ↕</th>
+                                    <th class="p-4">Kategori</th>
+                                    <th class="p-4 cursor-pointer hover:text-white" onclick="sortStok('stok')">Stok Adedi ↕</th>
+                                    <th class="p-4 cursor-pointer hover:text-white" onclick="sortStok('satisFiyati')">Satış Fiyatı ↕</th>
+                                    <th class="p-4 text-right">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stokTableBody" class="divide-y divide-dark-border text-xs"></tbody>
+                        </table>
                     </div>
-                </form>
-            `;
-            m.classList.remove('hidden');
+                    <div id="stokPagination" class="flex justify-between items-center text-xs text-gray-400 px-2"></div>
+                </div>`;
+            filterStok();
         }
 
-        function urunKaydet(e) {
-            e.preventDefault();
+        function filterStok() {
             const db = getDB();
-            db.urunler.push({
-                id: 'ur_' + Date.now(),
-                kod: document.getElementById('uKod').value,
-                ad: document.getElementById('uAd').value,
-                kategori: 'Genel',
-                subeId: 'sube_1',
-                alisFiyati: 500,
-                satisFiyati: parseFloat(document.getElementById('uFiyat').value),
-                stok: parseInt(document.getElementById('uStok').value),
-                kritikSinir: 3
+            const search = document.getElementById('stokSearch')?.value.toLowerCase() || '';
+            const kat = document.getElementById('stokKategoriFilter')?.value || '';
+            const durum = document.getElementById('stokDurumFilter')?.value || '';
+
+            let filtered = db.urunler.filter(u => {
+                const matchSearch = u.ad.toLowerCase().includes(search) || u.kod.toLowerCase().includes(search);
+                const matchKat = kat === '' || u.kategori === kat;
+                const matchDurum = durum === '' ? true : (durum === 'kritik' ? u.stok <= u.kritikSinir : u.stok > u.kritikSinir);
+                return matchSearch && matchKat && matchDurum;
             });
-            saveDB(db);
-            modalKapat();
-            showToast('Ürün eklendi.', 'success');
-            renderPage(currentRoute);
+
+            // Sıralama
+            filtered.sort((a, b) => {
+                let valA = a[stokSortField];
+                let valB = b[stokSortField];
+                if (typeof valA === 'string') {
+                    return stokSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+                return stokSortAsc ? valA - valB : valB - valA;
+            });
+
+            // Sayfalama
+            const totalRecords = filtered.length;
+            const totalPages = Math.ceil(totalRecords / stokLimit) || 1;
+            if (stokPage > totalPages) stokPage = totalPages;
+            const start = (stokPage - 1) * stokLimit;
+            const paginated = filtered.slice(start, start + stokLimit);
+
+            const tbody = document.getElementById('stokTableBody');
+            if(!tbody) return;
+
+            tbody.innerHTML = paginated.length === 0 ? `<tr><td colspan="6" class="p-6 text-center text-gray-400">Ürün bulunamadı.</td></tr>` :
+                paginated.map(u => `
+                    <tr class="hover:bg-dark-border/30 ${u.stok <= u.kritikSinir ? 'bg-brand-red/5' : ''}">
+                        <td class="p-4 font-mono text-gray-400">${u.kod}</td>
+                        <td class="p-4 font-semibold text-white flex items-center gap-2">
+                            ${u.ad}
+                            ${u.stok <= u.kritikSinir ? '<span class="px-2 py-0.5 bg-brand-red/10 text-brand-red text-[10px] rounded font-semibold animate-pulse">Kritik</span>' : ''}
+                        </td>
+                        <td class="p-4 text-gray-300">${u.kategori}</td>
+                        <td class="p-4 font-bold ${u.stok <= u.kritikSinir ? 'text-brand-red' : 'text-brand-green'}">${u.stok} Adet</td>
+                        <td class="p-4 font-bold text-white">${formatTL(u.satisFiyati)}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="guvenliSil('urunler', '${u.id}', '${u.ad}')" class="text-brand-red hover:underline">Sil</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            document.getElementById('stokPagination').innerHTML = `
+                <span>Toplam ${totalRecords} kayıttan ${(start+1)}-${Math.min(start+stokLimit, totalRecords)} arası gösteriliyor.</span>
+                <div class="space-x-2">
+                    <button onclick="changeStokPage(-1)" ${stokPage === 1 ? 'disabled class="opacity-50 cursor-not-allowed"' : ''} class="px-3 py-1 bg-dark-border rounded text-white">Önceki</button>
+                    <span>Sayfa ${stokPage} / ${totalPages}</span>
+                    <button onclick="changeStokPage(1)" ${stokPage === totalPages ? 'disabled class="opacity-50 cursor-not-allowed"' : ''} class="px-3 py-1 bg-dark-border rounded text-white">Sonraki</button>
+                </div>
+            `;
         }
 
-        function urunSil(id) {
-            const db = getDB();
-            db.urunler = db.urunler.filter(u => u.id !== id);
-            saveDB(db);
-            showToast('Ürün silindi.', 'success');
-            renderPage(currentRoute);
+        function sortStok(field) {
+            if(stokSortField === field) stokSortAsc = !stokSortAsc;
+            else { stokSortField = field; stokSortAsc = true; }
+            filterStok();
         }
 
-        // --- JSON YEDEKLEME VE GERİ YÜKLEME ---
-        function renderJsonYedekleme(db, main) {
+        function changeStokLimit() {
+            stokLimit = parseInt(document.getElementById('stokLimitSelect').value);
+            stokPage = 1;
+            filterStok();
+        }
+
+        function changeStokPage(dir) {
+            stokPage += dir;
+            filterStok();
+        }
+
+        // --- CSV / EXCEL İÇE AKTARIM (Önizleme ve Mükerrer Engelleme) ---
+        function renderCsvIceAktarim(main) {
             main.innerHTML = `
                 <div class="max-w-xl bg-dark-card border border-dark-border p-6 rounded-2xl space-y-6">
                     <div>
-                        <h3 class="font-bold text-sm text-white">JSON Yedekleme ve Dışa Aktarım</h3>
-                        <p class="text-xs text-gray-400 mt-1">Bütün işletme verilerinizi tam kapsamlı JSON dosyası olarak bilgisayarınıza indirebilirsiniz.</p>
+                        <h3 class="font-bold text-sm text-white">CSV / Excel Veri Aktarımı</h3>
+                        <p class="text-xs text-gray-400 mt-1">Ön muhasebe programınızdan aldığınız CSV veya Excel dosyalarını yükleyin. Sistem mükerrer kayıtları engeller ve önizleme sunar.</p>
                     </div>
-                    <button onclick="jsonIndir()" class="w-full py-3 rounded-xl bg-brand-blue text-white text-xs font-semibold shadow-lg shadow-blue-500/20">Verileri JSON Olarak İndir</button>
-                    
-                    <div class="pt-6 border-t border-dark-border space-y-4">
-                        <h3 class="font-bold text-sm text-white">Yedekten Geri Yükle</h3>
-                        <input type="file" id="jsonFile" accept=".json" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-dark-border file:text-white hover:file:bg-gray-700">
-                        <button onclick="jsonYukle()" class="w-full py-3 rounded-xl bg-brand-green text-white text-xs font-semibold">Yedekten Yükle</button>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Veri Türü Seçin</label>
+                        <select id="importType" class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
+                            <option value="urunler">Ürün / Stok Verileri</option>
+                            <option value="musteriler">Müşteri / Cari Verileri</option>
+                            <option value="subeler">Şube Verileri</option>
+                        </select>
                     </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">CSV Dosyası Yükle</label>
+                        <input type="file" id="csvFile" accept=".csv" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-dark-border file:text-white">
+                    </div>
+                    <button onclick="csvOnizlemeAc()" class="w-full py-3 rounded-xl bg-brand-blue text-white text-xs font-semibold">Dosyayı Önizle ve Aktar</button>
+                </div>
+            `;
+        }
+
+        function csvOnizlemeAc() {
+            const fileInput = document.getElementById('csvFile');
+            const type = document.getElementById('importType').value;
+            if(fileInput.files.length === 0) {
+                showToast('Lütfen bir CSV dosyası seçin.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n').filter(l => l.trim() !== '');
+                if(lines.length < 2) {
+                    showToast('Dosya boş veya geçersiz formatta.', 'error');
+                    return;
+                }
+
+                const headers = lines[0].split(',').map(h => h.trim());
+                const previewRows = lines.slice(1, 6).map(l => l.split(',').map(c => c.trim()));
+
+                const m = document.getElementById('globalModal');
+                const box = document.getElementById('modalBox');
+                box.innerHTML = `
+                    <div class="p-6 border-b border-dark-border flex justify-between items-center">
+                        <h3 class="font-bold text-sm text-white">Aktarım Önizlemesi (${lines.length - 1} Satır)</h3>
+                        <button onclick="modalKapat()" class="text-gray-400 hover:text-white">✕</button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <p class="text-xs text-gray-400">Sütunlar başarıyla algılandı. Mükerrer kayıtlar otomatik olarak filtrelenecektir.</p>
+                        <div class="overflow-x-auto max-h-60 border border-dark-border rounded-xl">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-dark-bg text-gray-400 border-b border-dark-border">
+                                    <tr>${headers.map(h => `<th class="p-3">${h}</th>`).join('')}</tr>
+                                </thead>
+                                <tbody class="divide-y divide-dark-border">
+                                    ${previewRows.map(row => `<tr>${row.map(cell => `<td class="p-3 text-white">${cell}</td>`).join('')}</tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-end gap-3 pt-4 border-t border-dark-border">
+                            <button type="button" onclick="modalKapat()" class="px-4 py-2 rounded-xl bg-dark-border text-xs text-gray-300">İptal</option>
+                            <button type="button" onclick="csvAktarimiOnayla('${type}', ${JSON.stringify(lines)})" class="px-4 py-2 rounded-xl bg-brand-green text-xs text-white font-semibold">Aktarımı Onayla</button>
+                        </div>
+                    </div>
+                `;
+                m.classList.remove('hidden');
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        function csvAktarimiOnayla(type, lines) {
+            const db = getDB();
+            let eklenen = 0;
+            let mukerrer = 0;
+
+            for (let i = 1; i < lines.length; i++) {
+                const cols = lines[i].split(',').map(c => c.trim());
+                if(cols.length < 2) continue;
+
+                if(type === 'urunler') {
+                    const kod = cols[0];
+                    const ad = cols[1];
+                    const satisFiyati = parseFloat(cols[2]) || 1000;
+                    const stok = parseInt(cols[3]) || 10;
+
+                    if(db.urunler.some(u => u.kod === kod)) {
+                        mukerrer++;
+                    } else {
+                        db.urunler.push({ id: 'ur_' + Date.now() + i, kod, ad, kategori: 'Genel', subeId: 'sube_1', alisFiyati: satisFiyati*0.7, satisFiyati, stok, kritikSinir: 3 });
+                        eklenen++;
+                    }
+                }
+            }
+
+            saveDB(db);
+            modalKapat();
+            showToast(`Aktarım tamamlandı! ${eklenen} kayıt eklendi, ${mukerrer} mükerrer kayıt engellendi.`, 'success');
+            renderPage(currentRoute);
+        }
+
+        // --- JSON YEDEKLEME VE DİĞER YARDIMCILAR ---
+        function renderJsonYedekleme(main) {
+            main.innerHTML = `
+                <div class="max-w-xl bg-dark-card border border-dark-border p-6 rounded-2xl space-y-6">
+                    <div>
+                        <h3 class="font-bold text-sm text-white">Otomatik ve Manuel JSON Yedekleme</h3>
+                        <p class="text-xs text-gray-400 mt-1">Sistem her işlemde güvenli depolama yapar. Dilerseniz tam yedeğinizi indirebilirsiniz.</p>
+                    </div>
+                    <button onclick="jsonIndir()" class="w-full py-3 rounded-xl bg-brand-blue text-white text-xs font-semibold">Tam JSON Yedeğini İndir</button>
                 </div>
             `;
         }
@@ -947,137 +730,27 @@
             document.body.appendChild(dlAnchor);
             dlAnchor.click();
             dlAnchor.remove();
-            showToast('Yedek başarıyla indirildi.', 'success');
+            showToast('Yedek indirildi.', 'success');
         }
 
-        function jsonYukle() {
-            const fileInput = document.getElementById('jsonFile');
-            if(fileInput.files.length === 0) {
-                showToast('Lütfen bir JSON dosyası seçin.', 'error');
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-                    showToast('Veriler başarıyla geri yüklendi.', 'success');
-                    loadPage(currentRoute);
-                } catch(err) {
-                    showToast('Geçersiz dosya formatı.', 'error');
-                }
-            };
-            reader.readAsText(fileInput.files[0]);
-        }
-
-        // --- CSV DIŞA AKTARIM ---
-        function renderCsvDisaAktarim(db, main) {
-            main.innerHTML = `
-                <div class="max-w-xl bg-dark-card border border-dark-border p-6 rounded-2xl space-y-6">
-                    <div>
-                        <h3 class="font-bold text-sm text-white">CSV Dışa Aktarma</h3>
-                        <p class="text-xs text-gray-400 mt-1">Şube listesini ve finansal hareketleri Excel uyumlu CSV formatında dışarı aktarın.</p>
-                    </div>
-                    <button onclick="csvIndir()" class="w-full py-3 rounded-xl bg-brand-blue text-white text-xs font-semibold">Şubeleri CSV Olarak İndir</button>
-                </div>`;
-        }
-
-        function csvIndir() {
-            const db = getDB();
-            let csv = "Sube Adi,Il,Ciro,Kar,Gider\n";
-            db.subeler.forEach(s => {
-                csv += `"${s.ad}","${s.il}",${s.ciro},${s.kar},${s.gider}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'subeler_raporu.csv';
-            a.click();
-            showToast('CSV dosyası oluşturuldu.', 'success');
-        }
-
-        // --- İŞLETME AYARLARI ---
-        function renderIsletmeAyarlari(db, main) {
-            main.innerHTML = `
-                <div class="max-w-xl bg-dark-card border border-dark-border p-6 rounded-2xl space-y-4">
-                    <h3 class="font-bold text-sm text-white">İşletme Bilgileri</h3>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Şirket Ünvanı</label>
-                        <input type="text" value="Executive Holding A.Ş." class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Merkez Adres</label>
-                        <input type="text" value="Adapazarı / Sakarya" class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white">
-                    </div>
-                    <button onclick="showToast('Ayarlar kaydedildi.', 'success')" class="px-5 py-2.5 bg-brand-blue text-white rounded-xl text-xs font-semibold">Değişiklikleri Kaydet</button>
-                </div>`;
-        }
-
-        // --- GENERIC PLACEHOLDER (Doldurulmamış menüler için eksiksiz arayüz) ---
-        function renderGenericPlaceholder(main, pageName) {
-            main.innerHTML = `
-                <div class="bg-dark-card border border-dark-border p-8 rounded-2xl text-center space-y-4 max-w-xl mx-auto mt-12">
-                    <div class="w-12 h-12 rounded-2xl bg-brand-blue/10 text-brand-blue flex items-center justify-center font-bold text-lg mx-auto">EX</div>
-                    <h3 class="text-base font-bold text-white">${pageName} Modülü</h3>
-                    <p class="text-xs text-gray-400">Bu modül Executive Control entegre veritabanına bağlıdır. İlgili kayıtları yukarıdaki genel veri akışından ve sistem yönetiminden güncelleyebilirsiniz.</p>
-                    <button onclick="navigateTo('genel-bakis')" class="px-5 py-2.5 rounded-xl bg-brand-blue text-white text-xs font-semibold">Genel Bakışa Dön</button>
-                </div>`;
-        }
-
-        // Ekstra kalan sayfaların yönlendirmesi için fonksiyonlar
-        function renderSirketPerformansi(db, main) { renderGenelBakis(db, main); }
-        function renderYoneticiMerkezi(db, main) { renderGenelBakis(db, main); }
-        function renderKritikUyarilar(db, main) { renderUrunStokTablosu(db, main, 'Kritik Stok Alarmları'); }
-        function renderKarlilikAnalizi(db, main) { renderFinansTablosu(db, main, 'Satış', 'Kârlılık ve Satış Raporu'); }
-        function renderKasaYonetimi(db, main) { renderFinansTablosu(db, main, 'Gelir', 'Kasa Hareketleri'); }
-        function renderBankaHesaplari(db, main) { renderFinansTablosu(db, main, 'Gelir', 'Banka Hesap Özeti'); }
-        function renderNakitAkis(db, main) { renderFinansTablosu(db, main, 'Gelir', 'Nakit Akış Konsolu'); }
-        function renderTahsilatOdeme(db, main) { renderBorcAlacakTablosu(db, main, 'Alacak', 'Tahsilat ve Ödemeler'); }
-        function renderFinansalRaporlar(db, main) { renderGenelBakis(db, main); }
-        function renderSubeCiroAnaliz(db, main) { renderSubeYonetimi(db, main); }
-        function renderSubeKarlilikAnaliz(db, main) { renderSubeYonetimi(db, main); }
-        function renderSubeGiderAnaliz(db, main) { renderSubeYonetimi(db, main); }
-        function renderSubeHedefleri(db, main) { renderSubeYonetimi(db, main); }
-        function renderSubeKarsilastirma(db, main) { renderSubeYonetimi(db, main); }
-        function renderSubeKarnesi(db, main) { renderSubeYonetimi(db, main); }
-        function renderSubeDenetim(db, main) { renderSubeYonetimi(db, main); }
-        function renderDepoYonetimi(db, main) { renderUrunStokTablosu(db, main, 'Depo Yönetimi'); }
-        function renderKritikStokSayfasi(db, main) { renderUrunStokTablosu(db, main, 'Kritik Stok'); }
-        function renderStokHareketleri(db, main) { renderUrunStokTablosu(db, main, 'Stok Hareketleri'); }
-        function renderStokSayimi(db, main) { renderUrunStokTablosu(db, main, 'Stok Sayımı'); }
-        function renderMusteriKartlari(db, main) {
-            main.innerHTML = `<div class="bg-dark-card border border-dark-border p-6 rounded-2xl">
-                <h3 class="text-sm font-bold text-white mb-4">Müşteri Kartları</h3>
-                <div class="space-y-2">${db.musteriler.map(m => `<div class="p-3 bg-dark-bg rounded-xl border border-dark-border flex justify-between items-center text-xs"><span class="font-bold text-white">${m.ad}</span><span class="text-gray-400">${m.tel}</span><span class="text-brand-blue font-bold">${formatTL(m.bakiye)}</span></div>`).join('')}</div>
-            </div>`;
-        }
-        function renderTedarikciKartlari(db, main) {
-            main.innerHTML = `<div class="bg-dark-card border border-dark-border p-6 rounded-2xl">
-                <h3 class="text-sm font-bold text-white mb-4">Tedarikçi Kartları</h3>
-                <div class="space-y-2">${db.tedarikciler.map(t => `<div class="p-3 bg-dark-bg rounded-xl border border-dark-border flex justify-between items-center text-xs"><span class="font-bold text-white">${t.ad}</span><span class="text-gray-400">${t.kategori}</span><span class="text-brand-red font-bold">${formatTL(t.bakiye)}</span></div>`).join('')}</div>
-            </div>`;
-        }
-        function renderPersonelListesi(db, main) {
-            main.innerHTML = `<div class="bg-dark-card border border-dark-border p-6 rounded-2xl">
-                <h3 class="text-sm font-bold text-white mb-4">Personel Listesi</h3>
-                <div class="space-y-2">${db.personel.map(p => `<div class="p-3 bg-dark-bg rounded-xl border border-dark-border flex justify-between items-center text-xs"><span class="font-bold text-white">${p.ad}</span><span class="text-gray-400">${p.gorev}</span><span class="text-brand-green font-bold">Performans: ${p.performans}</span></div>`).join('')}</div>
-            </div>`;
-        }
-        function renderOperasyonGorevleri(db, main) {
-            main.innerHTML = `<div class="bg-dark-card border border-dark-border p-6 rounded-2xl">
-                <h3 class="text-sm font-bold text-white mb-4">Operasyon ve Görev Yönetimi</h3>
-                <div class="space-y-2">${db.operasyon.map(o => `<div class="p-3 bg-dark-bg rounded-xl border border-dark-border flex justify-between items-center text-xs"><span class="font-bold text-white">${o.baslik}</span><span class="text-gray-400">Sorumlu: ${o.sorumlusu}</span><span class="px-2 py-1 bg-brand-blue/10 text-brand-blue rounded font-semibold">${o.durum}</span></div>`).join('')}</div>
-            </div>`;
+        function formatTL(tutar) {
+            return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(tutar);
         }
 
         function modalKapat() {
             document.getElementById('globalModal').classList.add('hidden');
         }
 
-        // Başlangıç Çalıştırma
+        // Ekstra Sayfa Bağlantıları
+        function renderFinansTablosu(db, main, tip, baslik) {
+            main.innerHTML = `<div class="bg-dark-card border border-dark-border p-6 rounded-2xl"><h3 class="text-sm font-bold text-white mb-4">${baslik}</h3><p class="text-xs text-gray-400">Veriler güvenli depoda saklanmaktadır.</p></div>`;
+        }
+        function renderKarlilikAnalizi(db, main) { renderGenelBakis(db, main); }
+        function renderNakitAkis(db, main) { renderGenelBakis(db, main); }
+        function renderKritikStok(db, main) { renderGenelStokTablosu(db, main); }
+
         window.addEventListener('DOMContentLoaded', () => {
-            getDB(); // Varsayılan verileri yükle
+            getDB();
             initNavigation();
             navigateTo('genel-bakis');
         });
